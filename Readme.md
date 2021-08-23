@@ -1,3 +1,5 @@
+
+
 # goroutine
 
 ```go
@@ -25,7 +27,63 @@ the`main` functinon is finished to run, because the `gorouitne ` inside the `mai
 
 ### Goroutine Scheduling :
 
-`GMP`  it is the implementation of the runtime level of the Go language, and is a set of scheduling system implemented by the Go language itself. Different from the operating system scheduling OS threads.
+`GMP`  it is the implementation of the runtime level of the Go language, and is a set of scheduling system implemented by the Go language itself. Different from the operating system scheduling OS
+
+threads.
+
+
+
+<img src="/home/aboubakar/Pictures/GMP0.png" alt="GMP0" style="zoom:150%;" />
+
+
+
+The triangle represents an OS thread. It's the thread of execution  managed by the OS and works pretty much like your standard POSIX thread.  In the runtime code, it's called **`M`**for machine.
+
+The circle represents a goroutine.    It includes the stack, the instruction pointer and other information important for scheduling goroutines, like any channel it might be  blocked on. In the runtime code, it's called a **`G`**.
+
+The rectangle represents a context for scheduling. You can look at  it as a localized version of the scheduler which runs Go code on a  single thread. It's the important part that lets us go from a N:1 scheduler to a  M:N scheduler.In the runtime code, it's called **``P``** for processor. More on this part in a bit.
+
+
+
+
+
+![GMP1](/home/aboubakar/Pictures/GMP1.png)
+
+
+
+Here we see two Threads `M` , each holding  a context `P` , each running a goroutine `G`. In order to run goroutines , a thread must hold a context.
+
+The number of context is set on startup to the value of the `GOMAXPROCS` environment variable or through the runtime function `GOMAXPROCS()` .We can use that to rune the invocation of `Go` process to individual computer, such at a 4 core PC is running GO code on 4 threads.
+
+
+
+### Who you gonna (sys) call ?
+
+You might wonder now, why have contexts at all ? Can not we just put the runqueues on the threads and get rid of contexts ? Not really. Then reason we have contexts is so that we can hand them off to other threads if the running thread needs to block for some reason.
+
+
+
+![GMP2](/home/aboubakar/Pictures/GMP2.png)
+
+Here we see a thread giving up it is context so that another thread can run it. The scheduler makes sure there are enough threads to run all contexts. `M1` in the illustration above might be created just for the purpose of handing this syscall or it could come from a thread cache. The syscalling thread will hold to the goroutine that made the syscall since it is technically still executing , although blocked in hte OS.
+
+When the syscall returns, the thread must try and get a context in order to run the returning goroutine.     The normal mode of operation is to steal a context from one of the other threads.     If it can't steal one, it will put the goroutine on a global runqueue, put itself on the thread cache and go to sleep.
+
+The global runqueue is a runqueue that contexts pull from when they run out of their local runqueue.     Contexts also periodically check the global runqueue for goroutines.     Otherwise the goroutines on global runqueue could end up never running because of starvation.
+
+This handling of syscalls is why Go programs run with multiple threads, even when `GOMAXPROCS` is 1.     The runtime uses goroutines that call syscalls, leaving threads behind.
+
+
+
+### Stealing work
+
+Another way that the supported  state of the system can change is when a  context runs out of goroutines to schedule to. This can happen if the amount of work on the contexts runqueues is  unbalanced. This can cause a context to end up exhausting it's runqueue while  there is still work to be done in the system.  To keep running Go code, a context can take goroutines out of the  global runqueue but if there are no goroutines in it, it'll have to get  them from somewhere else.
+
+
+
+![GMP3](/home/aboubakar/Pictures/GMP3.png)
+
+That somewhere is the other contexts. When a context runs out, it will  try to steal about half of the runqueue from another context. This makes sure there is always work to do on each of the contexts,  which in turn makes sure that all threads are working at their maximum  capacity.
 
 
 
