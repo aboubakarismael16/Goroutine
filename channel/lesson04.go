@@ -21,9 +21,14 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	a, b := make(chan int32), make(chan int32)
-	go longTimeRequest(a)
-	go longTimeRequest(b)
-	//fmt.Println()
-	fmt.Println(square(<-a,<-b))
+	//a, b := make(chan int32), make(chan int32)
+	//go longTimeRequest(a)
+	//go longTimeRequest(b)
+
+
+	results := make(chan int32, 2)  // The channel can be buffered or not.
+	go longTimeRequest(results)
+	go longTimeRequest(results)
+
+	fmt.Println(square(<-results,<-results))
 }
