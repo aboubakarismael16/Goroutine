@@ -1,9 +1,19 @@
 package main
 
-func sayHello()  {
-
-}
+import (
+	"fmt"
+	"sync"
+)
 
 func main()  {
-	sayHello()
+	var wg sync.WaitGroup
+	for _, salutation := range []string{"hello", "greeting", "good day"} {
+		wg.Add(1)
+		go func(salutation string) {
+			defer wg.Done()
+			fmt.Println(salutation)
+		}(salutation)
+	}
+
+	wg.Wait()
 }
