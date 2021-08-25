@@ -4,19 +4,31 @@
 
 Go is a language supporting built-in concurrent programming. By using the `go` keyword to create goroutines (light weight threads) and by [using](https://go101.org/article/channel-use-cases.html) [channels](https://go101.org/article/channel.html) and [other concurrency](https://go101.org/article/concurrent-atomic-operation.html) [synchronization techniques](https://go101.org/article/concurrent-synchronization-more.html) provided in Go, concurrent programming becomes easy, flexible and enjoyable.
 ```go
-func main() {
+func numbers()  {
+	
+	for i := 0; i < 10; i++ {
+		time.Sleep(250 *time.Millisecond)
+		fmt.Printf("%d ", i)
+	}
+}
 
-   for i := 0; i < 100; i++ {
-      go func(i int) {
-         fmt.Println(i+1)
-      }(i)
-   }
+func alphabet()  {
+	
+	for i := 'a'; i <= 'p' ; i++ {
+		time.Sleep(500*time.Millisecond)
+		fmt.Printf("%c ", i)
+	}
+}
 
-   fmt.Println("main")
-   time.Sleep(time.Second)
-
+func main()  {
+	
+	go numbers()
+	go alphabet()
+	time.Sleep(3*time.Second)
+	fmt.Println("main terminated")
 }
 ```
+```0 1 a 2 3 b 4 5 c 6 7 d 8 e 9 main terminated```
 
 ### when the Goroutine is finished ?
 
