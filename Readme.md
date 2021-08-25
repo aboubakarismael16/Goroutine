@@ -2,12 +2,7 @@
 
 # goroutine
 
-
-
 Go is a language supporting built-in concurrent programming. By using the `go` keyword to create goroutines (light weight threads) and by [using](https://go101.org/article/channel-use-cases.html) [channels](https://go101.org/article/channel.html) and [other concurrency](https://go101.org/article/concurrent-atomic-operation.html) [synchronization techniques](https://go101.org/article/concurrent-synchronization-more.html) provided in Go, concurrent programming becomes easy, flexible and enjoyable.
-
-
-
 ```go
 func main() {
 
@@ -39,7 +34,7 @@ threads.
 
 
 
-<img src="/home/aboubakar/Pictures/GMP0.png" alt="GMP0" style="zoom:150%;" />
+![GMP1](img/GMP0.png)
 
 
 
@@ -53,7 +48,7 @@ The rectangle represents a context for scheduling. You can look at  it as a loca
 
 
 
-![GMP1](/home/aboubakar/Pictures/GMP1.png)
+![GMP1](img/GMP1.png)
 
 
 
@@ -69,7 +64,7 @@ You might wonder now, why have contexts at all ? Can not we just put the runqueu
 
 
 
-![GMP2](/home/aboubakar/Pictures/GMP2.png)
+![GMP2](img/GMP2.png)
 
 Here we see a thread giving up it is context so that another thread can run it. The scheduler makes sure there are enough threads to run all contexts. `M1` in the illustration above might be created just for the purpose of handing this syscall or it could come from a thread cache. The syscalling thread will hold to the goroutine that made the syscall since it is technically still executing , although blocked in hte OS.
 
@@ -87,7 +82,7 @@ Another way that the supported  state of the system can change is when a  contex
 
 
 
-![GMP3](/home/aboubakar/Pictures/GMP3.png)
+![GMP3](img/GMP3.png)
 
 That somewhere is the other contexts. When a context runs out, it will  try to steal about half of the runqueue from another context. This makes sure there is always work to do on each of the contexts,  which in turn makes sure that all threads are working at their maximum  capacity.
 
