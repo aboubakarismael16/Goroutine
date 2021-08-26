@@ -2,27 +2,33 @@ package main
 
 import (
 	"fmt"
-	"sync"
+	"math/rand"
+	"runtime"
+	"time"
 )
+
+var ticket = 10
 
 
 func main() {
-	var wg sync.WaitGroup
-	var x, y int
-	wg.Add(2)
-	x, y = 1, 2
+	go saleTicket("gate 1")
+	go saleTicket("gate 2")
+	go saleTicket("gate 3")
+	go saleTicket("gate 4")
+	time.Sleep(5*time.Second)
+	fmt.Println(runtime.NumGoroutine())
+}
 
-	go func() {
-		defer wg.Done()
-		fmt.Println(x)
-	}()
-	go func() {
-		defer wg.Done()
-		fmt.Println(y)
-	}()
-
-	wg.Wait()
-	fmt.Println("main function")
-	//time.Sleep(1*time.Second)
-
+func saleTicket(name string)  {
+	rand.Seed(time.Now().UnixNano())
+	for {
+		if ticket > 0 {
+			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+			fmt.Println(name, "sold", ticket)
+			ticket--
+		} else {
+			fmt.Println(name, "not ticket to sold")
+			break
+		}
+	}
 }
