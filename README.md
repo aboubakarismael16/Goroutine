@@ -314,6 +314,49 @@ func main() {
 }
 ```
 
+# for-select loop
+
+loop runs in its own goroutine. `select` lets avoid blocking indefinitely in one one state.
+
+```go
+select{
+    case <-ch1:
+        ...
+    case data := <-ch2:
+        ...
+    case ch3<-data:
+        ...
+    default:
+        ...
+}
+```
+
+
+
+Here an example for `select`:
+
+```go
+func main() {
+   ch := make(chan int, 1)
+   for i := 0; i < 10; i++ {
+      select {
+      case x := <- ch :
+         fmt.Println(x)
+      case ch <-i :
+      }
+   }
+}
+```
+
+Use  `select` statement help to improve the readability of the code:
+
+- `select`  can handle the sending/receiving operations of one or more `channel`
+- If there are multiple  `case` running at the same time, `select` will randomly select one
+- For `select{}` without any `case`, it will wait forever and can be used to block the main function.
+
+
+
+
  
 
 
