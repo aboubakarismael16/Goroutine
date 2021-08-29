@@ -1,16 +1,34 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"time"
+)
 
 func main()  {
-	ch1 := make(chan int, 5)
-	ch1 <- 10
-	fmt.Println(len(ch1), cap(ch1))
-	ch1 <- 20
-	ch1 <- 30
-	ch1 <- 40
-	ch1 <- 50
-	fmt.Println("------------")
-	fmt.Println(len(ch1))
 
+	ch2 := make(chan string, 4)
+	go sendData3(ch2)
+	for  {
+		time.Sleep(1*time.Second)
+		v,ok := <- ch2
+		if !ok {
+			fmt.Println("Finished to read", ok)
+			break
+		}
+
+		fmt.Println("\tthe read value is :", v)
+	}
+
+	fmt.Println("main function")
+
+}
+
+func sendData3(ch chan string)  {
+	for i := 0; i < 10; i++ {
+		ch <- "Data" + " " + strconv.Itoa(i)
+		fmt.Println("child goroutine ,", i)
+	}
+	close(ch)
 }

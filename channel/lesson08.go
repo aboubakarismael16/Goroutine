@@ -4,9 +4,9 @@ import "fmt"
 
 func main()  {
 
-	//ch1 := make(chan int)     // unbuffered
-	//fmt.Println(len(ch1), cap(ch1))  //0 0
-	//ch1 <- 10  // unbuffered channel, it's need to another goroutine to lock the block
+	ch1 := make(chan int)     // unbuffered
+	fmt.Println(len(ch1), cap(ch1))  //0 0
+	ch1 <- 10  // unbuffered channel, it's need to another goroutine to lock the block
 
 	ch2 := make(chan int, 5) // buffered , cap = 5
 	fmt.Println(len(ch2), cap(ch2))
