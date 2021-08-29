@@ -203,10 +203,12 @@ var b chan int //channel type format
 
 ```go
 var b chan int
+
 func main() {
-   fmt.Println(b)      // nil
-   b := make(chan int) // you need to initialize the channel
-   fmt.Println(b)      // 0xc000094060
+    fmt.Println(b) // nil
+    b = make(chan int) // you need to initialize the channel
+    fmt.Println(b) // 0xc000094060
+}
 ```
 
 
