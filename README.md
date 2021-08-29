@@ -278,6 +278,45 @@ func main() {
 }
 ```
 
+
+## One-Way-Only channel
+
+Sometimes we pass the channel as a parameter between multiple task functions. Many times we use the channel in different task functions to restrict it, such as restricting the channel to only send or only receive in the function.
+
+Then golang uses `one-way-only channel` to solve this problem. Here the example:
+
+```go
+func counter(out chan<- int) {
+	for i := 0; i < 100; i++ {
+		out <- i
+	}
+	close(out)
+}
+
+func squarer(out chan<- int, in <-chan int) {
+	for i := range in {
+		out <- i * i
+	}
+	close(out)
+}
+
+func printer(in <-chan int) {
+	for i := range in {
+		fmt.Println(i)
+	}
+}
+
+func main() {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+	go counter(ch1)
+	go squarer(ch2, ch1)
+	printer(ch2)
+}
+```
+- `chan <- int` only send , can not receive.
+- `<- chan int` only receive , can not send.
+
 # work pool
 
 We usually use the `worker pool` mode that can specify the number of goroutines to start to control the number of `goroutines` and prevent `goroutine` leak and crash.

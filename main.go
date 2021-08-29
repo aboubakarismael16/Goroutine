@@ -2,33 +2,26 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"time"
 )
 
 func main()  {
 
-	ch2 := make(chan string, 4)
-	go sendData3(ch2)
-	for  {
-		time.Sleep(1*time.Second)
-		v,ok := <- ch2
-		if !ok {
-			fmt.Println("Finished to read", ok)
-			break
-		}
+	ch := make(chan string)
+	done := make(chan bool)
+	go sendData3(ch, done)
+	data := <-ch
+	fmt.Println("child goroutine zhuan lai : ", data)
+	ch <- "I am main"
 
-		fmt.Println("\tthe read value is :", v)
-	}
+	<-done
 
 	fmt.Println("main function")
 
 }
 
-func sendData3(ch chan string)  {
-	for i := 0; i < 10; i++ {
-		ch <- "Data" + " " + strconv.Itoa(i)
-		fmt.Println("child goroutine ,", i)
-	}
-	close(ch)
+func sendData3(ch chan string, done chan bool)  {
+	ch <- "I am xiao ming"
+	data := <- ch
+	fmt.Println("main goroutine zhuan lai: ", data)
+	done <- true
 }
