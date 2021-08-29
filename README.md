@@ -117,8 +117,6 @@ func f()  {
 }
 ```
 
-`goroutine ` 
-
 ### Sync.WaitGroup
 
 in Go Concurrencey, it's easy to make by using `sync.WaitGroup`  for running `gorountine` .
