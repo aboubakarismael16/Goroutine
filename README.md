@@ -317,6 +317,15 @@ func main() {
 - `chan <- int` only send , can not receive.
 - `<- chan int` only receive , can not send.
 
+## type of Channel
+
+Channel is divided into two types: `buffered channel` and `unbuffered channel` .  We can also use  "synchronous mode" for `unbeffered channel` and  "asynchronous mode" for `buffered channel`.
+
+```go
+ch1 := make(chan int, 10) // buffered channel
+ch2 := make(chan int)     // unbeffered channel
+```
+
 # work pool
 
 We usually use the `worker pool` mode that can specify the number of goroutines to start to control the number of `goroutines` and prevent `goroutine` leak and crash.

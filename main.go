@@ -2,26 +2,33 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 func main()  {
 
-	ch := make(chan string)
-	done := make(chan bool)
-	go sendData3(ch, done)
-	data := <-ch
-	fmt.Println("child goroutine zhuan lai : ", data)
-	ch <- "I am main"
+	//timer := time.NewTimer(1*time.Second)
+	//fmt.Printf("%T\n", timer)
+	//fmt.Println(time.Now())
+	//
+	//ch := timer.C
+	//fmt.Println(<-ch)
 
-	<-done
+	fmt.Println("--------------")
 
-	fmt.Println("main function")
+	timer2 := time.NewTimer(5 * time.Second)
 
-}
+	go func() {
+		 <- timer2.C
 
-func sendData3(ch chan string, done chan bool)  {
-	ch <- "I am xiao ming"
-	data := <- ch
-	fmt.Println("main goroutine zhuan lai: ", data)
-	done <- true
+		 fmt.Println("timer2 finished")
+	}()
+
+	time.Sleep(3*time.Second)
+	stop := timer2.Stop()
+
+	if stop {
+		fmt.Println("timer 2 stopped")
+	}
+
 }
