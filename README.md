@@ -423,10 +423,9 @@ func main() {
 }
 ```
 
-# for-select loop
+# Select
 
-loop runs in its own goroutine. `select` lets avoid blocking indefinitely in one one state.
-
+The `select` statement is used to choose from multiple  send/receive channel operations. The select statement blocks until one  of the send/receive operations is ready. If multiple operations are  ready, one of them is chosen at random. The syntax is similar to `switch` except that each of the case statements will be a channel operation.  Let's dive right into some code for better understanding.
 ```go
 select{
     case <-ch1:
@@ -440,20 +439,33 @@ select{
 }
 ```
 
-
-
 Here an example for `select`:
 
 ```go
+func server1(ch chan string)  {
+    time.Sleep(5*time.Second)
+    ch <- "receive from server1"
+}
+
+func server2(ch chan string)  {
+    time.Sleep(3*time.Second)
+    ch <- "receive from server2"
+}
+
 func main() {
-   ch := make(chan int, 1)
-   for i := 0; i < 10; i++ {
-      select {
-      case x := <- ch :
-         fmt.Println(x)
-      case ch <-i :
-      }
-   }
+    output1 := make(chan string)
+    output2 := make(chan string)
+    
+    go server1(output1)
+    go server2(output2)
+    
+    time.Sleep(1*time.Second)
+    select {
+    case s1 := <- output1 :
+        fmt.Println(s1)
+    case s2 := <- output2:
+        fmt.Println(s2)
+    }
 }
 ```
 

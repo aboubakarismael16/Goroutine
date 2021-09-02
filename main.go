@@ -1,24 +1,14 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
-
-func write(ch chan int)  {
-	for i := 0; i < 5; i++ {
-		ch <- i
-		fmt.Println("Successful wrote", i, "to ch")
-	}
-	close(ch)
-}
+import "fmt"
 
 func main()  {
-	ch := make(chan int, 2)
-	go write(ch)
-	time.Sleep(2*time.Millisecond)
-	for v := range ch {
-		fmt.Println("read value", v, "from ch")
-		time.Sleep(2*time.Millisecond)
+	ch := make(chan int, 1)
+	for i := 0; i < 10; i++ {
+		select {
+		case x := <- ch:
+			fmt.Println(x)
+		case ch <- i:
+		}
 	}
 }
