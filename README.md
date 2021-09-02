@@ -459,13 +459,12 @@ func main() {
     go server1(output1)
     go server2(output2)
     
-    time.Sleep(1*time.Second)
     select {
-    case s1 := <- output1 :
-        fmt.Println(s1)
-    case s2 := <- output2:
-        fmt.Println(s2)
-    }
+        case s1 := <- output1 :
+            fmt.Println(s1)
+        case s2 := <- output2:
+            fmt.Println(s2)
+        }
 }
 ```
 
@@ -475,6 +474,51 @@ Use  `select` statement help to improve the readability of the code:
 - If there are multiple  `case` running at the same time, `select` will randomly select one
 - For `select{}` without any `case`, it will wait forever and can be used to block the main function.
 
+# Mutex
+
+A Mutex is used to provide a locking mechanism to ensure that only one  Goroutine is running the critical section of code at any point in time  to prevent race conditions from happening.
+
+Mutex is available in the [sync](https://golang.org/pkg/sync/) package. There are two methods defined on [Mutex](https://tip.golang.org/pkg/sync/#Mutex) namely [Lock](https://tip.golang.org/pkg/sync/#Mutex.Lock) and [Unlock](https://tip.golang.org/pkg/sync/#Mutex.Unlock). Any code that is present between a call to `Lock` and `Unlock` will be executed by only one Goroutine, thus avoiding race condition.
+
+```go
+mutex.Lock()  
+x = x + 1  
+mutex.Unlock()  
+```
+
+
+
+**If one Goroutine already holds the lock and if a new Goroutine  is trying to acquire a lock, the new Goroutine will be blocked until the mutex is unlocked.**
+
+Here an example for `mutex ` :
+
+```go
+var x int
+
+func increment(wg *sync.WaitGroup, m *sync.Mutex)  {
+   m.Lock()
+   x += 1
+   m.Unlock()
+   wg.Done()
+}
+
+func main() {
+   var wg sync.WaitGroup
+   var m sync.Mutex
+
+   for i := 0; i < 1000; i++ {
+      wg.Add(1)
+      go increment(&wg,&m)
+   }
+
+   wg.Wait()
+   fmt.Println("the final value of x : ", x)
+}
+```
+
+```go
+the final value of x : 1000  
+```
 
 
 
