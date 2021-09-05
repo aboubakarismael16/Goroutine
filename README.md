@@ -191,8 +191,38 @@ If `goroutine` is the concurrent execution body of Go program, `channel` is the 
 
 `Channel` in Go language is a special type. The `channel` is like a conveyor belt or queue, always following the First In First Out (FIFO) rule to ensure the order of sending and receiving data. Each 	`channel` is a specific type of conduit, that is  when you declare the channel, you need to specify the element type for it.
 
+## hchan struct
+
+The code source and implementation of channel are in  `src/runtime/chan.go` :
+
+```go
+type hchan struct {
+	qcount   uint           // total data in the queue
+	dataqsiz uint           // size of the circular queue
+	buf      unsafe.Pointer // points to an array of dataqsiz elements
+	elemsize uint16
+	closed   uint32
+	elemtype *_type // element type
+	sendx    uint   // send index
+	recvx    uint   // receive index
+	recvq    waitq  // list of recv waiters
+	sendq    waitq  // list of send waiters
+
+	// lock protects all fields in hchan, as well as several
+	// fields in sudogs blocked on this channel.
+	//
+	// Do not change another G's status while holding this lock
+	// (in particular, do not ready a G), as this can deadlock
+	// with stack shrinking.
+	lock mutex
+}
+```
 
 
+
+![GMP1](img/gmp4.png)
+
+## make channel
 ```go
 var b chan int //channel type format
 ```
